@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
+import requests
 import sys
+import tensorflow as tf
 
 import keras
 from keras.preprocessing import image
@@ -18,7 +20,7 @@ class GestureUI():
     def classify_gesture(self, frame):
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frame = cv2.resize(frame, (85, 92), interpolation = cv2.INTER_CUBIC)
-        cv2.imshow('test', frame)
+        cv2.imshow('Input', frame)
         img_tensor = image.img_to_array(frame)
         img_tensor = np.expand_dims(img_tensor, axis=0)
         img_tensor /= 255.
@@ -31,7 +33,8 @@ class GestureUI():
             _, frame = capture.read()
             cv2.imshow('CacauNet', frame)
             self.classify_gesture(frame)
-            pressed_key = cv2.waitKey(100)
+            requests.post('http://127.0.0.1:5000/state', json={"mode": 1, "selection":1})
+            pressed_key = cv2.waitKey(300)
             if pressed_key == 27:
                 cv2.destroyAllWindows()
                 sys.exit()
